@@ -1,5 +1,6 @@
 package com.unisa;
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.Scanner;
 
 public class App 
@@ -12,6 +13,8 @@ public class App
         sc.nextLine();
         ResultSet set;
         String nomeEquipaggio;
+
+        System.out.println(LocalDate.now());
 
         switch (op) {
             case 1:
@@ -60,51 +63,74 @@ public class App
                     System.out.println(set.getString("codice") + " " + set.getString("costo") + " " + set.getString("peso") + " " + set.getString("costruttore"));
                 }
 
+                System.out.println("Inserisci il telaio desiderato: ");
+                String telaioVettura = sc.nextLine();
+
                 set = db.execQuery("SELECT * FROM cambio");
                 System.out.println("\nCAMBI");
                 while (set.next()) {
                     System.out.println(set.getString("codice") + " " + set.getString("costo") + " " + set.getInt("num_marce") + " " + set.getString("costruttore"));
                 }
 
+                System.out.println("Inserisci il cambio desiderato: ");
+                String cambioVettura = sc.nextLine();
+
                 set = db.execQuery("SELECT * FROM motore");
                 System.out.println("\nCAMBI");
                 while (set.next()) {
-                    System.out.println(set.getString("codice") + " " + set.getString("costo") + " " + set.getString("peso") + " " + set.getString("costruttore"));
+                    System.out.println(set.getString("codice") + " " + set.getString("costo") + " " + set.getInt("num_cilindri") + " " + set.getInt("cilindrata") + " " + set.getString("tipo_motore") + " " + set.getString("costruttore"));
                 }
 
-                db.insertQuery("INSERT INTO vettura VALUES ('"+ numGara + "', '"+ modelloVettura +"', '"+ nomeEquipaggio +"', 'TF01', 'CF01', 'MF01')");
+                System.out.println("Inserisci il motore desiderato: ");
+                String motoreVettura = sc.nextLine();
+
+                db.insertQuery("INSERT INTO vettura VALUES ('"+ numGara + "', '"+ modelloVettura +"', '"+ nomeEquipaggio +"', '"+ telaioVettura +"', '"+ cambioVettura +"', '"+ motoreVettura +"', '"+ LocalDate.now() +"', '"+ LocalDate.now() +"', '"+ LocalDate.now() +"')");
                 break;
             case 3:
                 System.out.println("REGISTRAZIONE PILOTA");
+
                 System.out.println("Inserisci il nome: ");
                 String nomePilota = sc.nextLine();
                 sc.nextLine();
+
                 System.out.println("Inserisci il cognome: ");
                 String cognomePilota = sc.nextLine();
-                //numGara
-                System.out.println("Inserisci la data di nascita (YYYY/MM/DD): ");
+
+                set = db.execQuery("SELECT * FROM vettura");
+                while (set.next())
+                {
+                    System.out.println(set.getString("num_gara") + " " + set.getString("modello"));
+                }
+
+                System.out.println("Inserisci il numero di gara tra le vetture disponibili: ");
+                int numGaraRegistrazione = sc.nextInt();
+
+                System.out.println("Inserisci la data di nascita (YYYY-MM-DD): ");
                 String dataNascitaPilota = sc.nextLine();
+
                 System.out.println("Inserisci la nazionalità: ");
                 String nazionalitaPilota = sc.nextLine();
+
                 System.out.println("Inserisci il tipo di pilota (Pro - 0, AM - 1, Gentleman Driver - 2): ");
                 int tipoPilota = sc.nextInt();
+
                 switch (tipoPilota) {
                     case 0:
                         System.out.println("Inserisci il numero di licenze possedute: ");
                         int numLicenzePilota = sc.nextInt();
-                        db.insertQuery("INSERT INTO pilota_pro VALUES ('"+ nomePilota +"', '"+ cognomePilota +"', 16, '"+ dataNascitaPilota +"', '"+ nazionalitaPilota +"', "+ numLicenzePilota +", 'Ferrari')");
+                        db.insertQuery("INSERT INTO pilota_pro VALUES ('"+ nomePilota +"', '"+ cognomePilota +"', "+ numGaraRegistrazione +", '"+ dataNascitaPilota +"', '"+ nazionalitaPilota +"', "+ numLicenzePilota +", 'Ferrari')");
                         break;
                     case 1:
-                        System.out.println("Inserisci la data di acquisizione della licenza: ");
+                        System.out.println("Inserisci la data di acquisizione della licenza (YYYY-MM-DD): ");
                         String dataAcquisizioneLicenzaAM = sc.nextLine();
-                        db.insertQuery("INSERT INTO pilota_am VALUES ('"+ nomePilota +"', '"+ cognomePilota +"', 55, '"+ dataNascitaPilota +"', '"+ nazionalitaPilota +"', '"+ dataAcquisizioneLicenzaAM +"', 'Ferrari')");
+                        db.insertQuery("INSERT INTO pilota_am VALUES ('"+ nomePilota +"', '"+ cognomePilota +"', "+ numGaraRegistrazione +", '"+ dataNascitaPilota +"', '"+ nazionalitaPilota +"', '"+ dataAcquisizioneLicenzaAM +"', 'Ferrari')");
                         break;
                     case 2:
-                        System.out.println("Inserisci la data di acquisizione della licenza: ");
+                        System.out.println("Inserisci la data di acquisizione della licenza (YYYY-MM-DD): ");
                         String dataAcquisizioneLicenzaGD = sc.nextLine();
                         System.out.println("Inserisci la quota finanziata: ");
                         int quotaFinanziata = sc.nextInt();
-                        db.insertQuery("INSERT INTO pilota_am VALUES ('"+ nomePilota +"', '"+ cognomePilota +"', 55, '"+ dataNascitaPilota +"', '"+ nazionalitaPilota +"', '"+ dataAcquisizioneLicenzaGD +"', 'Ferrari')");
+                        db.insertQuery("INSERT INTO pilota_am VALUES ('"+ nomePilota +"', '"+ cognomePilota +"', "+ numGaraRegistrazione +", '"+ dataNascitaPilota +"', '"+ nazionalitaPilota +"', '"+ dataAcquisizioneLicenzaGD +"', 'Ferrari')");
                         break;
                 }
                 System.out.println("Inserisci il nome dell'equipaggio di cui fa parte il pilota: ");
