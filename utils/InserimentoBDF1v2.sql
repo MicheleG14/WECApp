@@ -23,13 +23,13 @@ INSERT INTO motore VALUES
 ('MM01', 3050000, 6, 5000, 'Aspirato', 'Mercedes-AMG');
 
 INSERT INTO vettura VALUES
-(16, 'SF-23', 'Ferrari', 'FT01', 'FC01', 'FM01'),
-(55, 'SF-23', 'Ferrari', 'FT01', 'FC01', 'FM01'),
-(24, 'SF-23', 'Ferrari', 'FT01', 'FC01', 'FM01'),
-(44, 'W14', 'Mercedes-AMG', 'MT01', 'MC01', 'MM01'), 
-(2, 'W14', 'Mercedes-AMG', 'MT01', 'MC01', 'MM01'),
-(1, 'RB19', 'Red Bull Racing', 'RT01', 'RC01', 'RM01'),
-(11, 'RB19', 'Red Bull Racing', 'RT01', 'RC01', 'RM01');
+(16, 'SF-23', 'Ferrari', 'FT01', 'FC01', 'FM01','2024-01-03','2024-01-03','2024-01-03'),
+(55, 'SF-23', 'Ferrari', 'FT01', 'FC01', 'FM01','2024-01-03','2024-01-03','2024-01-03'),
+(24, 'SF-23', 'Ferrari', 'FT01', 'FC01', 'FM01','2024-01-03','2024-01-03','2024-01-03'),
+(44, 'W14', 'Mercedes-AMG', 'MT01', 'MC01', 'MM01','2024-01-03','2024-01-03','2024-01-03'),
+(2, 'W14', 'Mercedes-AMG', 'MT01', 'MC01', 'MM01','2024-01-03','2024-01-03','2024-01-03'),
+(1, 'RB19', 'Red Bull Racing', 'RT01', 'RC01', 'RM01','2024-01-03','2024-01-03','2024-01-03'),
+(11, 'RB19', 'Red Bull Racing', 'RT01', 'RC01', 'RM01','2024-01-03','2024-01-03','2024-01-03');
 
 INSERT INTO circuito VALUES
 ('Autodromo Nazionale di Monza', 'Italia', 5.7, 11),
@@ -37,9 +37,9 @@ INSERT INTO circuito VALUES
 ('Circuit of the Americas', 'Stati Uniti', 5.5, 20);
 
 INSERT INTO gara VALUES
-('Gran Premio d\'Austria', '2023-07-02', 2, 'RedBull Ring'),
-('Formula 1 Pirelli Gran Premio d\'Italia', '2023-09-03', 2, 'Autodromo Nazionale di Monza'),
-('Gran Premio degli Stati Uniti d\'America', '2023-10-22', 2, 'Circuit of the Americas');
+('Gran Premio d\'Austria', '2023-07-02', 2, 'Asciutta','RedBull Ring'),
+('Formula 1 Pirelli Gran Premio d\'Italia', '2023-09-03', 2,'Asciutta' ,'Autodromo Nazionale di Monza'),
+('Gran Premio degli Stati Uniti d\'America', '2023-10-22', 2, 'Bagnata' ,'Circuit of the Americas');
 
 INSERT INTO iscrizione(vettura, gara, data_evento, punti, motivo_ritiro) VALUES 
 (1, 'Gran Premio d\'Austria', '2023-07-02', 25, NULL),
