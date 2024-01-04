@@ -1,6 +1,8 @@
 package com.unisa;
 import java.sql.*;
 import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Scanner;
 
 public class App 
@@ -11,7 +13,7 @@ public class App
         System.out.print("Inserisci l'operazione che vuoi eseguire: ");
         int op = sc.nextInt();
         clearBuffer(sc);
-        ResultSet set;
+        ResultSet set = null;
         String nomeEquipaggio;
 
         switch (op) {
@@ -288,7 +290,147 @@ public class App
 
                 break;
 
+            case 10:
+
+                break;
+
+            case 11:
+                System.out.println("PERCENTUALE GENTLEMAN DRIVER PER OGNI SCUDERIA");
+
+                HashMap<String, Integer> piloti = new HashMap<String, Integer>();
+                HashMap<String, Integer> gentlemanDriver = new HashMap<String, Integer>();
+
+                set = db.execQuery("SELECT count(equipaggio), equipaggio FROM pilota_am GROUP BY equipaggio");
+                while (set.next()){
+                    piloti.put(set.getString("equipaggio"), set.getInt("count(equipaggio)"));
+                }
+
+                set = db.execQuery("SELECT count(equipaggio), equipaggio FROM pilota_pro GROUP BY equipaggio");
+                while (set.next()){
+                    if(piloti.containsKey(set.getString("equipaggio"))){
+                        piloti.put(set.getString("equipaggio"),
+                                piloti.get(set.getString("equipaggio")) + set.getInt("count(equipaggio)"));
+                    }
+                    else {
+                        piloti.put(set.getString("equipaggio"), set.getInt("count(equipaggio)"));
+                    }
+                }
+
+                set = db.execQuery("SELECT count(equipaggio), equipaggio FROM gentleman_driver GROUP BY equipaggio");
+                while (set.next()){
+                    gentlemanDriver.put(set.getString("equipaggio"), set.getInt("count(equipaggio)"));
+                }
+
+                for (Map.Entry<String, Integer> entry : piloti.entrySet()) {
+                    String scuderia = entry.getKey();
+                    int numPiloti = entry.getValue();
+                    int numGentlemanDriver = gentlemanDriver.getOrDefault(scuderia, 0);
+
+                    // Evita una divisione per zero
+                    if (numGentlemanDriver != 0) {
+                        double percentualeGentlemanDriver = (double) numGentlemanDriver / (numPiloti + numGentlemanDriver) * 100;
+                        System.out.println("Scuderia: " + scuderia + "\t percentuale gentleman driver: " + percentualeGentlemanDriver);
+                    } else {
+                        System.out.println("Scuderia: " + scuderia + "\t percentuale gentleman driver: 0.0");
+                    }
+                }
+                break;
+
+            case 12:
+                System.out.println("STAMPA DEI COSTRUTTORI E DEL NUMERO DI COMPONENTI FORNITI");
+
+                set = db.execQuery("SELECT * FROM costruttore");
+
+                while (set.next()){
+                    System.out.println(set.getString("nome") + "\t"
+                                        + set.getString("ragione_sociale") + "\t"
+                                        + set.getString("sede_fabbrica") + "\t"
+                                        + set.getInt("num_componenti_forniti"));
+                }
+
+                break;
+            case 13:
+                System.out.println("STAMPA DELLA CLASSIFICA FINALE DEI PUNTI CONSEGUITI DA TUTTE LE VETTURA");
+
+                set = db.execQuery("SELECT\n" +
+                        "    v.num_gara AS num_gara,\n" +
+                        "    v.modello as modello,\n" +
+                        "    SUM(COALESCE(i.punti, 0)) AS punti_totali\n" +
+                        "FROM\n" +
+                        "    vettura v\n" +
+                        "        LEFT JOIN iscrizione i ON v.num_gara = i.vettura\n" +
+                        "GROUP BY\n" +
+                        "\n" +
+                        "    v.num_gara\n" +
+                        "ORDER BY\n" +
+                        "    punti_totali DESC");
+
+                while (set.next()){
+                    System.out.printf("Numero gara: %d\tModello: %s\tPunti totali: %d\n",
+                                        set.getInt("num_gara"),
+                                        set.getString("modello"),
+                                        set.getInt("punti_totali"));
+                }
+
+
+                break;
+
+            case 14:
+                System.out.println("STAMPA DELLE CLASSIFICHE FINALI PER TIPO DI MOTORE");
+                set = db.execQuery("SELECT\n" +
+                        "    m.tipo_motore,\n" +
+                        "    SUM(i.punti) AS punti_totali\n" +
+                        "FROM\n" +
+                        "    vettura v\n" +
+                        "JOIN\n" +
+                        "    motore m ON v.motore = m.codice\n" +
+                        "JOIN\n" +
+                        "    iscrizione i ON v.num_gara = i.vettura\n" +
+                        "GROUP BY\n" +
+                        "    m.tipo_motore\n" +
+                        "ORDER BY\n" +
+                        "    punti_totali DESC;\n" +
+                        "\n");
+
+                while (set.next()){
+                    System.out.printf("Tipo motore: %s\tPunti totali: %d\n", set.getString("tipo_motore"), set.getInt("punti_totali"));
+                }
+                break;
+
+            case 15:
+
+                //DA TESTARE
+                System.out.println("STAMPA DEL REPORT CHE ELENCHI CIASCUNA SCUDERIA SULLA BASE DEL RAPPORTO" +
+                        "PUNTI/MINUTI DI GARA, MEDIANDO TRA LE MACCHINE APPARTENENTI A CIASCUNA SCUDERIA");
+
+                set = db.execQuery("SELECT\n" +
+                        "    s.nome AS scuderia,\n" +
+                        "    AVG(i.punti / g.durata_ore * 60) AS rapporto_punti_minuti\n" +
+                        "FROM\n" +
+                        "    scuderia s\n" +
+                        "JOIN\n" +
+                        "    equipaggio e ON s.equipaggio = e.nome\n" +
+                        "JOIN\n" +
+                        "    pilota_pro p ON e.nome = p.equipaggio\n" +
+                        "JOIN\n" +
+                        "    vettura v ON p.num_gara = v.num_gara\n" +
+                        "JOIN\n" +
+                        "    iscrizione i ON v.num_gara = i.vettura\n" +
+                        "JOIN\n" +
+                        "    gara g ON i.gara = g.nome\n" +
+                        "\n" +
+                        "GROUP BY\n" +
+                        "    s.nome\n" +
+                        "ORDER BY\n" +
+                        "    rapporto_punti_minuti DESC;");
+
+                while (set.next()){
+                    System.out.println(set.getString("scuderia") + "\t" + set.getFloat("rapporto_punti_minuti"));
+                }
+                break;
         }
+        set.close();
+        sc.close();
     }
 
     static void clearBuffer(Scanner sc){

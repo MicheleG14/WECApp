@@ -8,7 +8,7 @@ INSERT INTO scuderia VALUES ('Scuderia Ferrari', 'Maranello, Italy', 0, 'Ferrari
 INSERT INTO telaio VALUES ('FT01', 1350000, 75, 'Ferrari');
 INSERT INTO cambio VALUES ('FC01', 35000, 12, 'Ferrari');
 INSERT INTO motore VALUES ('FM01', 2050000, 6, 5000, 'Aspirato', 'Ferrari');
-INSERT INTO vettura VALUES (16, 'Ferrari SF-23', 'Ferrari', 'TF01', 'CF01', 'MF01');
+INSERT INTO vettura VALUES (16, 'Ferrari SF-23', 'Ferrari', 'TF01', 'CF01', 'MF01', '2024-01-01','2024-01-01','2024-01-01');
 
 -- OPERAZIONE 3
 
@@ -21,8 +21,8 @@ INSERT INTO gentleman_driver VALUES
 
 -- OPERAZIONE 4
 
-SELECT quota_finanziamento FROM gentleman_driver WHERE cognome = 'Zhou'; 
-UPDATE gentleman_driver SET quota_finanziamento = 100  WHERE cognome = 'Zhou';
+SELECT quota_finanziamenti FROM gentleman_driver WHERE cognome = 'Zhou';
+UPDATE gentleman_driver SET quota_finanziamenti = 100  WHERE cognome = 'Zhou';
 UPDATE scuderia SET finanziamenti = 1 WHERE nome = 'Scuderia Ferrari';
 
 -- OPERAZIONE 5
@@ -90,7 +90,7 @@ WHERE p.nazionalità IN (
 
 -- OPERAZIONE 11
 
-SELECT count(equipaggio), equipaggio FROM pilota_am GROUP BY equipaggio; 
+SELECT count(equipaggio), equipaggio FROM pilota_am GROUP BY equipaggio;
 SELECT count(equipaggio), equipaggio FROM pilota_pro GROUP BY equipaggio;
 SELECT count(equipaggio), equipaggio FROM gentleman_driver GROUP BY equipaggio; 
 
@@ -100,7 +100,19 @@ SELECT * FROM costruttore;
 
 -- OPERAZIONE 13
 
-SELECT * FROM iscrizione WHERE gara = 'Gran Premio degli Stati Uniti d\'America'; 
+SELECT
+    v.num_gara AS num_gara,
+    v.modello as modello,
+    SUM(COALESCE(i.punti, 0)) AS punti_totali
+FROM
+    vettura v
+        LEFT JOIN iscrizione i ON v.num_gara = i.vettura
+GROUP BY
+
+    v.num_gara
+ORDER BY
+    punti_totali DESC;
+
 
 -- OPERAZIONE 14
 
@@ -116,7 +128,9 @@ JOIN
 GROUP BY
     m.tipo_motore
 ORDER BY
-    v.num_gara, punti_totali DESC;
+    punti_totali DESC;
+
+
 
 -- OPERAZIONE 15
 
@@ -132,9 +146,10 @@ JOIN
 JOIN
     vettura v ON p.num_gara = v.num_gara
 JOIN
-    gara g ON v.num_gara = g.nome
-JOIN
     iscrizione i ON v.num_gara = i.vettura
+JOIN
+    gara g ON i.gara = g.nome
+
 GROUP BY
     s.nome
 ORDER BY
